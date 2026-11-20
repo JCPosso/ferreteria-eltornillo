@@ -1,0 +1,9 @@
+output "resource_group" { value = azurerm_resource_group.main.name }
+output "swa_name" { value = azurerm_static_web_app.web.name }
+output "swa_url" { value = "https://${azurerm_static_web_app.web.default_host_name}" }
+output "function_name" { value = azurerm_linux_function_app.api.name }
+output "sql_server_name" { value = azurerm_mssql_server.main.name }
+output "sql_server_fqdn" { value = azurerm_mssql_server.main.fully_qualified_domain_name }
+output "sql_database" { value = azurerm_mssql_database.inventario.name }
+output "identity_name" { value = azurerm_user_assigned_identity.api.name }
+output "identity_client_id" { value = azurerm_user_assigned_identity.api.client_id }
