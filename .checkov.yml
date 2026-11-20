@@ -1,0 +1,34 @@
+framework:
+  - terraform
+# Excepciones documentadas. Cada una es una decision de costo o de alcance (ver ADR en el HLD).
+skip-check:
+  # Red: sin private endpoints para mantener el costo <= USD 150/mes (ADR de red y seguridad)
+  - CKV_AZURE_113   # SQL con acceso publico: mitigado con solo Entra ID y TLS 1.2
+  - CKV2_AZURE_45   # Private endpoint de SQL
+  - CKV2_AZURE_34   # Regla 0.0.0.0: la Function App de consumo no tiene IP fija
+  - CKV_AZURE_59    # Storage con acceso de red publico (sin blobs publicos)
+  - CKV2_AZURE_33   # Private endpoint de Storage
+  - CKV_AZURE_189   # Key Vault con acceso publico (autorizacion por RBAC)
+  - CKV_AZURE_109   # Firewall del Key Vault
+  - CKV2_AZURE_32   # Private endpoint de Key Vault
+  - CKV_AZURE_221   # Function App publica: la consume el Static Web App (riesgo R11 del HLD)
+  # Cifrado, replicacion y disponibilidad: RPO 24h / RTO 4h no los exigen
+  - CKV2_AZURE_1    # Llave propia (CMK): se usa la llave administrada por Microsoft
+  - CKV_AZURE_206   # Replicacion LRS es suficiente
+  - CKV_AZURE_229   # Zona redundante: la oferta gratuita de SQL no la admite
+  - CKV_AZURE_225   # Plan de consumo: no aplica
+  - CKV_AZURE_212   # Plan de consumo: no aplica
+  - CKV_AZURE_224   # Ledger de SQL: no exigido por el negocio
+  - CKV2_AZURE_40   # El host de Functions (plan de consumo) necesita la llave del Storage
+  # Auditoria avanzada: pendiente para produccion real (Defender, retencion > 90 dias)
+  - CKV_AZURE_23
+  - CKV_AZURE_24
+  - CKV2_AZURE_2
+  - CKV_AZURE_33
+  - CKV2_AZURE_21
+  - CKV2_AZURE_41
+  # Key Vault: borrado suave activo; purge protection apagado para poder limpiar el curso
+  - CKV_AZURE_42
+  - CKV_AZURE_110
+  # OIDC: el subject ya esta limitado a repo + environment (dev/prod)
+  - CKV_AZURE_249

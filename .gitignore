@@ -1,0 +1,14 @@
+node_modules/
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+!*.tfvars.example
+.terraform.lock.hcl.bak
+crash.log
+local.settings.json
+.env
+.env.*
+*.zip
+coverage/
+.DS_Store
