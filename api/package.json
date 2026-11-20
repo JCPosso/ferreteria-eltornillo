@@ -1,0 +1,17 @@
+{
+  "name": "ferreteria-eltornillo-api",
+  "version": "1.0.0",
+  "private": true,
+  "description": "API de inventario de Ferretería El Tornillo (Azure Functions, Node.js)",
+  "main": "src/functions/*.js",
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "start": "func start",
+    "test": "node --test",
+    "lint": "node --check src/lib/*.js src/functions/*.js"
+  },
+  "dependencies": {
+    "@azure/functions": "^4.5.0",
+    "mssql": "^11.0.1"
+  }
+}
