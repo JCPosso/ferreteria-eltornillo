@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ferretería El Tornillo · Inventario</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header>
+    <h1>Ferretería El Tornillo</h1>
+    <div id="usuario" aria-live="polite"></div>
+  </header>
+
+  <main>
+    <section id="acceso" hidden>
+      <p>Para consultar el inventario inicie sesión con su cuenta.</p>
+      <a class="boton" href="/.auth/login/aad?post_login_redirect_uri=/">Iniciar sesión</a>
+    </section>
+
+    <section id="consulta" hidden>
+      <h2>Consultar inventario</h2>
+      <form id="formulario">
+        <label>Sede
+          <select id="sede" required></select>
+        </label>
+        <label>Buscar por código o nombre
+          <input id="q" type="search" maxlength="50" placeholder="Ej.: martillo o TOR-001" autocomplete="off">
+        </label>
+        <button type="submit" class="boton">Consultar</button>
+      </form>
+      <p id="estado" role="status"></p>
+      <table id="tabla" hidden>
+        <thead><tr><th>Código</th><th>Producto</th><th>Categoría</th><th class="num">Existencias</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </section>
+  </main>
+
+  <footer>Versión <span id="version">dev</span></footer>
+  <script src="app.js"></script>
+</body>
+</html>
