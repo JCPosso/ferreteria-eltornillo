@@ -1,0 +1,29 @@
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  ci:
+    uses: ./.github/workflows/ci.yml
+
+  dev:
+    needs: ci
+    uses: ./.github/workflows/_deploy.yml
+    with:
+      environment: dev
+    secrets: inherit
+
+  # El environment "prod" exige aprobación manual (Settings > Environments > prod > Required reviewers).
+  prod:
+    needs: dev
+    uses: ./.github/workflows/_deploy.yml
+    with:
+      environment: prod
+    secrets: inherit
