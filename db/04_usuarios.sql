@@ -1,0 +1,14 @@
+-- Da acceso de solo lectura a la identidad administrada de la Function App (sin contraseñas).
+-- scripts/db-init.js sustituye $(IDENTITY_NAME) y $(IDENTITY_CLIENT_ID).
+-- Se usa WITH SID porque el pipeline es una entidad de servicio y no puede consultar Microsoft Graph
+-- (CREATE USER ... FROM EXTERNAL PROVIDER fallaría).
+IF NOT EXISTS (SELECT 1 FROM sys.database_principals WHERE name = N'$(IDENTITY_NAME)')
+BEGIN
+  DECLARE @sid VARBINARY(16) = CAST(CAST('$(IDENTITY_CLIENT_ID)' AS UNIQUEIDENTIFIER) AS VARBINARY(16));
+  DECLARE @cmd NVARCHAR(400) = N'CREATE USER ' + QUOTENAME(N'$(IDENTITY_NAME)')
+    + N' WITH SID = ' + CONVERT(NVARCHAR(40), @sid, 1) + N', TYPE = E;';
+  EXEC (@cmd);
+END
+GO
+ALTER ROLE db_datareader ADD MEMBER [$(IDENTITY_NAME)];
+GO
