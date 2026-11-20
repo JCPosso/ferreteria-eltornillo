@@ -31,6 +31,7 @@ Navegador ──HTTPS──> Azure Static Web Apps (Standard) ──> Azure Func
 | `infra/bootstrap` | Se ejecuta una vez a mano: estado remoto de Terraform + identidad OIDC de GitHub |
 | `infra/modules/app` | Todos los recursos de un ambiente |
 | `infra/environments/{dev,prod}` | Ambientes que usan el módulo |
+| `docs/` | HLD (PDF y Word, con el diseño de despliegue como anexo), diagramas (.drawio y PNG) y estimación de costos (Excel) |
 | `.github/workflows/` | `ci.yml`, `deploy.yml` (dev → prueba de humo → prod con aprobación), `destroy.yml` |
 
 ## Pruebas locales
