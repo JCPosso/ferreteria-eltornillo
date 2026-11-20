@@ -1,0 +1,21 @@
+{
+  "_nota": "Precios en USD/mes. Mismos valores del Excel docs/costos/Estimacion_Costos_Ferreteria.xlsx. Confirmar con docs/costos/verificar_precios.sh antes de la entrega.",
+  "static_web_app": { "Free": 0.0, "Standard": 9.0 },
+  "sql_database": {
+    "S0": 14.72,
+    "S1": 29.43,
+    "serverless_vcore_second": 0.000145
+  },
+  "log_analytics_gb": 2.30,
+  "log_analytics_free_gb": 5,
+  "storage_gb": 0.0184,
+  "storage_operations_flat": 0.10,
+  "key_vault_flat": 0.03,
+  "metric_alert": 0.10,
+  "service_plan": { "Y1": 0.0 },
+  "suposiciones": {
+    "sql_active_hours": 286,
+    "log_ingestion_gb": 2,
+    "storage_gb": 1
+  }
+}

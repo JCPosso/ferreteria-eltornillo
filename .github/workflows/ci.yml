@@ -28,6 +28,13 @@ jobs:
       # Bloqueante: si una prueba falla, el pipeline no continúa ni despliega.
       - run: npm test
 
+  cost-gate:
+    name: Cost gate - unit tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 -m unittest discover -s scripts/tests -v
+
   iac:
     name: IaC - fmt, validate and Checkov
     runs-on: ubuntu-latest

@@ -43,6 +43,14 @@ npm test        # 39 pruebas (validación, autorización, consulta, funciones HT
 npm run lint
 ```
 
+## Control de costos en el pipeline
+
+Antes de cada `apply`, el paso **Cost gate** (`scripts/cost_gate.py`) lee el plan de Terraform, estima el costo mensual con los precios de `scripts/cost_prices.json` y **falla si supera el presupuesto** (dev 10 USD, prod 30 USD; se cambia con la variable `COST_BUDGET_USD` del ambiente). Un recurso sin regla de precio también hace fallar el paso. El resultado aparece en el resumen de la ejecución. Para probarlo: `COST_BUDGET_USD=0` hace que el despliegue se detenga antes de crear nada.
+
+```bash
+python3 -m unittest discover -s scripts/tests -v
+```
+
 ## Puesta en marcha (una sola vez)
 
 Requisitos: Azure CLI, Terraform >= 1.9, suscripción Azure for Students, repo en GitHub.

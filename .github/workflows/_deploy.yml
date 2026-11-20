@@ -57,6 +57,16 @@ jobs:
       - name: Terraform plan
         run: terraform -chdir="$TF_DIR" plan -input=false -out=tfplan
 
+      # Bloqueante: si el costo estimado del plan supera el presupuesto, no se aplica nada.
+      # Presupuesto por defecto: dev 10 USD, prod 30 USD. Se cambia con la variable COST_BUDGET_USD.
+      - name: Cost gate
+        env:
+          COST_BUDGET_USD: ${{ vars.COST_BUDGET_USD }}
+          ENVIRONMENT: ${{ inputs.environment }}
+        run: |
+          terraform -chdir="$TF_DIR" show -json tfplan > plan.json
+          python3 scripts/cost_gate.py plan.json --environment "$ENVIRONMENT"
+
       - name: Terraform apply
         run: terraform -chdir="$TF_DIR" apply -input=false tfplan
 
