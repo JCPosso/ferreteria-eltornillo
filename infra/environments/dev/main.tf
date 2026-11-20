@@ -28,10 +28,7 @@ variable "subscription_id" { type = string }
 variable "tenant_id" { type = string }
 variable "sql_admin_login" { type = string }
 variable "sql_admin_object_id" { type = string }
-variable "budget_email" {
-  type    = string
-  default = ""
-}
+variable "budget_email" { type = string }
 variable "app_version" {
   type    = string
   default = "dev"

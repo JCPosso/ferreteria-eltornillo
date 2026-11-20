@@ -47,9 +47,13 @@ variable "budget_amount" {
 }
 
 variable "budget_email" {
-  description = "Correo para las alertas de presupuesto. Vacío = sin presupuesto"
+  description = "Correo para las alertas de presupuesto y de errores 5xx (obligatorio: el enunciado exige al menos una alerta)"
   type        = string
-  default     = ""
+
+  validation {
+    condition     = can(regex("^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$", var.budget_email))
+    error_message = "budget_email es obligatorio: define la variable BUDGET_EMAIL en GitHub (Settings > Variables) con un correo válido."
+  }
 }
 
 variable "app_version" {

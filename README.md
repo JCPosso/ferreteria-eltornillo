@@ -64,7 +64,7 @@ Requisitos: Azure CLI, Terraform >= 1.9, suscripción Azure for Students, repo e
    terraform output
    ```
    Si el login OIDC falla con `AADSTS700213`, rellena `github_subject_repo` con el subject que muestra GitHub (`OWNER@ID/REPO@ID`), igual que en el Laboratorio 8.
-3. En GitHub, *Settings → Secrets and variables → Actions → Variables*, crea (son identificadores, no secretos): `AZURE_CLIENT_ID`, `AZURE_TENANT_ID`, `AZURE_SUBSCRIPTION_ID`, `SQL_ADMIN_OBJECT_ID`, `SQL_ADMIN_LOGIN`, `TFSTATE_RESOURCE_GROUP`, `TFSTATE_STORAGE_ACCOUNT`, `TFSTATE_CONTAINER` (los entrega `terraform output`) y opcionalmente `BUDGET_EMAIL`.
+3. En GitHub, *Settings → Secrets and variables → Actions → Variables*, crea (son identificadores, no secretos): `AZURE_CLIENT_ID`, `AZURE_TENANT_ID`, `AZURE_SUBSCRIPTION_ID`, `SQL_ADMIN_OBJECT_ID`, `SQL_ADMIN_LOGIN`, `TFSTATE_RESOURCE_GROUP`, `TFSTATE_STORAGE_ACCOUNT`, `TFSTATE_CONTAINER` (los entrega `terraform output`) y `BUDGET_EMAIL` (obligatoria: correo de las alertas de presupuesto y de errores; sin ella el plan falla).
 4. *Settings → Environments*: crea `dev` y `prod`; en `prod` agrega **Required reviewers**.
 5. `git push` a `main`: se ejecuta CI → deploy dev → prueba de humo → (aprobación) → deploy prod.
 6. Dar acceso a usuarios: en el portal de Azure, *Static Web App → Role management → Invite*, con los roles `sede-1`, `sede-2`, `sede-3` o `admin`.
