@@ -66,3 +66,9 @@ variable "tags" {
   type    = map(string)
   default = {}
 }
+
+variable "function_location" {
+  description = "Región del plan y la Function App. En Azure for Students la cuota de planes de consumo (Y1) es 0 en Central US; eastus tiene cuota para dev y prod (verificado) y la política de la suscripción la permite."
+  type        = string
+  default     = "eastus"
+}

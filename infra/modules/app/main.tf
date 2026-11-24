@@ -148,7 +148,7 @@ resource "azurerm_user_assigned_identity" "api" {
 resource "azurerm_service_plan" "api" {
   name                = "plan-${var.name}"
   resource_group_name = azurerm_resource_group.main.name
-  location            = azurerm_resource_group.main.location
+  location            = coalesce(var.function_location, azurerm_resource_group.main.location)
   os_type             = "Linux"
   sku_name            = "Y1"
   tags                = local.etiquetas
@@ -157,7 +157,7 @@ resource "azurerm_service_plan" "api" {
 resource "azurerm_linux_function_app" "api" {
   name                        = "func-${var.name}-${local.sufijo}"
   resource_group_name         = azurerm_resource_group.main.name
-  location                    = azurerm_resource_group.main.location
+  location                    = coalesce(var.function_location, azurerm_resource_group.main.location)
   service_plan_id             = azurerm_service_plan.api.id
   storage_account_name        = azurerm_storage_account.main.name
   storage_account_access_key  = azurerm_storage_account.main.primary_access_key
