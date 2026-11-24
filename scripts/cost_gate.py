@@ -66,6 +66,13 @@ def price_resource(rtype, after, prices):
         if tier in prices["static_web_app"]:
             return prices["static_web_app"][tier], f"plan {tier}"
         return None
+    if rtype == "azapi_resource":
+        # La base gratuita se crea con azapi (azurerm no expone useFreeLimit).
+        if str(after.get("type", "")).startswith("Microsoft.Sql/servers/databases"):
+            props = (after.get("body") or {}).get("properties") or {}
+            if props.get("useFreeLimit"):
+                return 0.0, "oferta gratuita (100.000 vCore-s al mes)"
+        return None
     if rtype == "azurerm_mssql_database":
         sku = after.get("sku_name") or ""
         if after.get("use_free_limit"):

@@ -5,6 +5,10 @@ terraform {
       source  = "hashicorp/azurerm"
       version = "~> 4.40"
     }
+    azapi = {
+      source  = "Azure/azapi"
+      version = "~> 2.0"
+    }
     random = {
       source  = "hashicorp/random"
       version = "~> 3.6"
@@ -17,6 +21,8 @@ terraform {
     use_azuread_auth = true
   }
 }
+
+provider "azapi" {}
 
 provider "azurerm" {
   features {}

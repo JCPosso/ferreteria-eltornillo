@@ -1,7 +1,8 @@
 locals {
-  sufijo    = random_string.sufijo.result
-  base      = replace(var.name, "-", "")
-  etiquetas = merge(var.tags, { proyecto = "ferreteria-eltornillo", ambiente = var.name })
+  sufijo     = random_string.sufijo.result
+  base       = replace(var.name, "-", "")
+  base_datos = "inventario"
+  etiquetas  = merge(var.tags, { proyecto = "ferreteria-eltornillo", ambiente = var.name })
 }
 
 resource "random_string" "sufijo" {
@@ -84,20 +85,30 @@ resource "azurerm_mssql_server" "main" {
   }
 }
 
-resource "azurerm_mssql_database" "inventario" {
-  name                        = "inventario"
-  server_id                   = azurerm_mssql_server.main.id
-  sku_name                    = "GP_S_Gen5_1"
-  min_capacity                = 0.5
-  max_size_gb                 = 32
-  auto_pause_delay_in_minutes = 60
-  zone_redundant              = false
-  storage_account_type        = "Local"
-  collation                   = "SQL_Latin1_General_CP1_CI_AS"
-  use_free_limit              = true
-  # Al agotar el cupo gratuito la base se pausa hasta el mes siguiente (riesgo R2 del HLD).
-  free_limit_exhaustion_behavior = "AutoPause"
-  tags                           = local.etiquetas
+# azurerm no expone la oferta gratuita (useFreeLimit), por eso la base se crea con azapi
+# (mismo enfoque que el Laboratorio 8). La oferta con AutoPause no acepta tamaño ni pausa
+# propios: solo se declara lo que la documentación permite.
+# Al agotar el cupo la base se pausa hasta el mes siguiente (riesgo R2 del HLD).
+resource "azapi_resource" "inventario" {
+  type      = "Microsoft.Sql/servers/databases@2023-08-01"
+  name      = local.base_datos
+  parent_id = azurerm_mssql_server.main.id
+  location  = azurerm_resource_group.main.location
+  tags      = local.etiquetas
+
+  body = {
+    sku = {
+      # Azure devuelve el nombre sin la capacidad; con GP_S_Gen5_2 cada plan mostraría un cambio.
+      name     = "GP_S_Gen5"
+      tier     = "GeneralPurpose"
+      family   = "Gen5"
+      capacity = 2
+    }
+    properties = {
+      useFreeLimit                = true
+      freeLimitExhaustionBehavior = "AutoPause"
+    }
+  }
 }
 
 # Permite el acceso desde servicios de Azure (la Function App). El pipeline agrega y quita
@@ -173,7 +184,7 @@ resource "azurerm_linux_function_app" "api" {
 
   app_settings = {
     SQL_SERVER   = azurerm_mssql_server.main.fully_qualified_domain_name
-    SQL_DATABASE = azurerm_mssql_database.inventario.name
+    SQL_DATABASE = local.base_datos
     APP_VERSION  = var.app_version
     # DefaultAzureCredential usa este client_id para obtener el token de la identidad
     AZURE_CLIENT_ID = azurerm_user_assigned_identity.api.client_id

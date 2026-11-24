@@ -26,7 +26,8 @@ class CostGateTest(unittest.TestCase):
     def test_dev_stack_is_nearly_free(self):
         rows, missing = cost_gate.estimate(plan(
             rc("azurerm_static_web_app", {"sku_tier": "Free"}),
-            rc("azurerm_mssql_database", {"use_free_limit": True, "sku_name": "GP_S_Gen5_1"}),
+            rc("azapi_resource", {"type": "Microsoft.Sql/servers/databases@2023-08-01",
+                                  "body": {"properties": {"useFreeLimit": True}}}),
             rc("azurerm_service_plan", {"sku_name": "Y1"}),
             rc("azurerm_log_analytics_workspace", {"daily_quota_gb": 0.5}),
             rc("azurerm_storage_account", {}),
@@ -52,6 +53,12 @@ class CostGateTest(unittest.TestCase):
         rows, _ = cost_gate.estimate(plan(
             rc("azurerm_static_web_app", {"sku_tier": "Standard"}, actions=("delete",))), PRICES)
         self.assertEqual(rows, [])
+
+    def test_azapi_without_free_limit_is_reported(self):
+        _, missing = cost_gate.estimate(plan(
+            rc("azapi_resource", {"type": "Microsoft.Sql/servers/databases@2023-08-01",
+                                  "body": {"properties": {}}})), PRICES)
+        self.assertEqual(len(missing), 1)
 
     def test_unknown_resource_is_reported(self):
         _, missing = cost_gate.estimate(plan(rc("azurerm_redis_cache", {})), PRICES)

@@ -4,6 +4,6 @@ output "swa_url" { value = "https://${azurerm_static_web_app.web.default_host_na
 output "function_name" { value = azurerm_linux_function_app.api.name }
 output "sql_server_name" { value = azurerm_mssql_server.main.name }
 output "sql_server_fqdn" { value = azurerm_mssql_server.main.fully_qualified_domain_name }
-output "sql_database" { value = azurerm_mssql_database.inventario.name }
+output "sql_database" { value = local.base_datos }
 output "identity_name" { value = azurerm_user_assigned_identity.api.name }
 output "identity_client_id" { value = azurerm_user_assigned_identity.api.client_id }
