@@ -26,15 +26,31 @@ if (!/^[0-9a-fA-F-]{36}$/.test(process.env.IDENTITY_CLIENT_ID)) {
   process.exit(1);
 }
 
+// La conexión puede tardar: la regla de firewall tarda en propagarse y la base serverless
+// puede estar reanudándose. Se reintenta en vez de fallar a la primera.
+async function conectar() {
+  const intentos = 8;
+  for (let i = 1; i <= intentos; i++) {
+    try {
+      return await new sql.ConnectionPool({
+        server: process.env.SQL_SERVER,
+        database: process.env.SQL_DATABASE,
+        authentication: { type: 'azure-active-directory-access-token', options: { token: process.env.SQL_ACCESS_TOKEN } },
+        options: { encrypt: true },
+        connectionTimeout: 30000,
+        requestTimeout: 60000,
+        pool: { max: 1, min: 1 }, // una sola conexión: SESSION_CONTEXT debe sobrevivir entre lotes
+      }).connect();
+    } catch (e) {
+      if (i === intentos) throw e;
+      console.log(`Intento ${i}/${intentos} sin conexión (${e.message}); reintento en 20 s`);
+      await new Promise((r) => setTimeout(r, 20000));
+    }
+  }
+}
+
 (async () => {
-  const pool = await new sql.ConnectionPool({
-    server: process.env.SQL_SERVER,
-    database: process.env.SQL_DATABASE,
-    authentication: { type: 'azure-active-directory-access-token', options: { token: process.env.SQL_ACCESS_TOKEN } },
-    options: { encrypt: true },
-    requestTimeout: 60000,
-    pool: { max: 1, min: 1 }, // una sola conexión: SESSION_CONTEXT debe sobrevivir entre lotes
-  }).connect();
+  const pool = await conectar();
 
   const dir = path.join(__dirname, '..', 'db');
   const archivos = fs.readdirSync(dir).filter((f) => f.endsWith('.sql')).sort();
