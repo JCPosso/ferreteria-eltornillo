@@ -12,3 +12,5 @@ local.settings.json
 *.zip
 coverage/
 .DS_Store
+__pycache__/
+*.pyc
