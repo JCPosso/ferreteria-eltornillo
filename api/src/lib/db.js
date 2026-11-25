@@ -36,6 +36,7 @@ async function ejecutar({ sedeId, admin }, consulta, parametros) {
     const req = new sql.Request(tx);
     for (const [nombre, valor] of Object.entries(parametros)) {
       if (nombre === 'patron') req.input(nombre, sql.NVarChar(120), valor);
+      else if (nombre === 'categoria') req.input(nombre, sql.NVarChar(50), valor);
       else req.input(nombre, sql.Int, valor);
     }
     const r = await req.query(consulta);
