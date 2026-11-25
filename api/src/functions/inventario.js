@@ -5,9 +5,17 @@ const { leerPrincipal, esAdmin, puedeVerSede } = require('../lib/auth');
 const { consultarInventario } = require('../lib/inventario');
 const { ErrorValidacion } = require('../lib/validar');
 
+function nombresCabeceras(h) {
+  const claves = typeof h?.keys === 'function' ? [...h.keys()] : Object.keys(h || {});
+  return claves.sort().join(',');
+}
+
 async function manejador(request, context) {
   const principal = leerPrincipal(request.headers);
-  if (!principal) return { status: 401, jsonBody: { error: 'no autenticado' } };
+  if (!principal) {
+    context.warn(`sin principal; cabeceras recibidas: ${nombresCabeceras(request.headers)}`);
+    return { status: 401, jsonBody: { error: 'no autenticado' } };
+  }
 
   const sede = request.query.get('sede');
   try {

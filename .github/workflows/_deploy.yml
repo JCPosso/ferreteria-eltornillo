@@ -19,7 +19,9 @@ jobs:
   deploy:
     name: Deploy ${{ inputs.environment }}
     runs-on: ubuntu-latest
-    environment: ${{ inputs.environment }}
+    environment:
+      name: ${{ inputs.environment }}
+      url: ${{ steps.tf.outputs.swa_url }}
     env:
       ARM_USE_OIDC: "true"
       ARM_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
@@ -137,3 +139,17 @@ jobs:
           FUNC_NAME: ${{ steps.tf.outputs.function_name }}
           ENVIRONMENT: ${{ inputs.environment }}
         run: bash scripts/smoke-test.sh
+
+      - name: Deployment summary
+        env:
+          SWA_URL: ${{ steps.tf.outputs.swa_url }}
+          RG: ${{ steps.tf.outputs.resource_group }}
+          ENVIRONMENT: ${{ inputs.environment }}
+        run: |
+          {
+            echo "### Despliegue ${ENVIRONMENT}"
+            echo ""
+            echo "- Sitio: ${SWA_URL}"
+            echo "- Versión: \`${GITHUB_SHA::7}\`"
+            echo "- Grupo de recursos: \`${RG}\`"
+          } >> "$GITHUB_STEP_SUMMARY"
