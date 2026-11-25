@@ -133,6 +133,32 @@ jobs:
           skip_app_build: true
           skip_api_build: true
 
+      - name: Verify the SWA identity provider on the API
+        if: inputs.environment == 'prod'
+        env:
+          SWA_NAME: ${{ steps.tf.outputs.swa_name }}
+          RG: ${{ steps.tf.outputs.resource_group }}
+          FUNC_NAME: ${{ steps.tf.outputs.function_name }}
+        run: |
+          FUNC_ID=$(az functionapp show -g "$RG" -n "$FUNC_NAME" --query id -o tsv)
+          proveedor() {
+            az rest --method get \
+              --url "https://management.azure.com${FUNC_ID}/config/authsettingsV2?api-version=2022-03-01" \
+              --query "properties.identityProviders.azureStaticWebApps.enabled" -o tsv
+          }
+          if [ "$(proveedor)" != "true" ]; then
+            echo "::warning::The SWA identity provider is missing on ${FUNC_NAME}; linking the backend again"
+            REGION=$(az functionapp show -g "$RG" -n "$FUNC_NAME" --query location -o tsv | tr -d ' ' | tr '[:upper:]' '[:lower:]')
+            az staticwebapp backends unlink -n "$SWA_NAME" -g "$RG"
+            az staticwebapp backends link -n "$SWA_NAME" -g "$RG" --backend-resource-id "$FUNC_ID" --backend-region "$REGION"
+            sleep 30
+          fi
+          if [ "$(proveedor)" != "true" ]; then
+            echo "::error::The SWA identity provider is still missing on ${FUNC_NAME}"
+            exit 1
+          fi
+          echo "SWA identity provider enabled on ${FUNC_NAME}"
+
       - name: Smoke test
         env:
           SWA_URL: ${{ steps.tf.outputs.swa_url }}
