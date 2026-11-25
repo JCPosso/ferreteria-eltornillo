@@ -8,32 +8,64 @@
 </head>
 <body>
   <header>
-    <h1>Ferretería El Tornillo</h1>
+    <div class="marca">
+      <h1>Ferretería El Tornillo</h1>
+      <span>Inventario por sede</span>
+    </div>
     <div id="usuario" aria-live="polite"></div>
   </header>
 
   <main>
-    <section id="acceso" hidden>
+    <section id="acceso" class="panel centrado" hidden>
       <p>Para consultar el inventario inicie sesión con su cuenta.</p>
       <a class="boton" href="/.auth/login/aad?post_login_redirect_uri=/">Iniciar sesión</a>
     </section>
 
     <section id="consulta" hidden>
       <h2>Consultar inventario</h2>
-      <form id="formulario">
+      <form id="formulario" class="panel filtros">
         <label>Sede
           <select id="sede" required></select>
         </label>
-        <label>Buscar por código o nombre
-          <input id="q" type="search" maxlength="50" placeholder="Ej.: martillo o TOR-001" autocomplete="off">
+        <label class="ancha">Buscar por código o nombre
+          <input id="q" type="search" maxlength="50" placeholder="Ej.: martillo o HER-001" autocomplete="off">
         </label>
-        <button type="submit" class="boton">Consultar</button>
+        <label>Categoría
+          <select id="categoria">
+            <option value="">Todas</option>
+          </select>
+        </label>
+        <label class="casilla">
+          <input id="bajo" type="checkbox">
+          <span>Solo stock bajo</span>
+        </label>
+        <div class="acciones">
+          <button type="submit" class="boton">Consultar</button>
+          <button type="button" id="limpiar" class="boton secundario">Limpiar</button>
+        </div>
       </form>
-      <p id="estado" role="status"></p>
-      <table id="tabla" hidden>
-        <thead><tr><th>Código</th><th>Producto</th><th>Categoría</th><th class="num">Existencias</th></tr></thead>
-        <tbody></tbody>
-      </table>
+
+      <p id="estado" role="status" aria-live="polite"></p>
+
+      <div id="contenedor" class="tabla-contenedor" hidden>
+        <table id="tabla">
+          <thead>
+            <tr>
+              <th scope="col">Código</th>
+              <th scope="col">Producto</th>
+              <th scope="col" class="cat">Categoría</th>
+              <th scope="col" class="num">Existencias</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+
+      <nav id="paginacion" class="paginacion" aria-label="Paginación" hidden>
+        <button type="button" id="anterior" class="boton secundario">Anterior</button>
+        <span id="pagina"></span>
+        <button type="button" id="siguiente" class="boton secundario">Siguiente</button>
+      </nav>
     </section>
   </main>
 
