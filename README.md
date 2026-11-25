@@ -19,6 +19,7 @@ Navegador ──HTTPS──> Azure Static Web Apps (Standard) ──> Azure Func
 - **Multi-sede en una sola base (pool):** columna `sede_id` + filtro en la consulta + *Row-Level Security* como defensa adicional.
 - **Infraestructura como código:** Terraform (`infra/`). **Pipeline:** GitHub Actions (`.github/workflows/`).
 - Dos ambientes: `dev` (Static Web Apps Free, la API se prueba directo en la Function App) y `prod` (Standard, único plan con SLA y funciones propias; aprobación manual).
+- Regiones: Central US para los datos y East US para la Function App (en Azure for Students solo East US tiene cuota del plan de consumo).
 
 ## Estructura
 
@@ -27,11 +28,10 @@ Navegador ──HTTPS──> Azure Static Web Apps (Standard) ──> Azure Func
 | `api/` | API de inventario (Azure Functions, Node.js 22) y pruebas (`npm test`) |
 | `web/` | Frontend estático y `staticwebapp.config.json` (rutas protegidas, cabeceras de seguridad) |
 | `db/` | Esquema, datos de ejemplo, Row-Level Security y usuario de la identidad administrada |
-| `scripts/` | `db-init.js` (inicializa la base con token Entra) y `smoke-test.sh` |
+| `scripts/` | `db-init.js` (inicializa la base con token Entra), `smoke-test.sh`, `cost_gate.py` (control de costos) y `verificar_precios.sh` |
 | `infra/bootstrap` | Se ejecuta una vez a mano: estado remoto de Terraform + identidad OIDC de GitHub |
 | `infra/modules/app` | Todos los recursos de un ambiente |
 | `infra/environments/{dev,prod}` | Ambientes que usan el módulo |
-| `docs/` | HLD (PDF y Word, con el diseño de despliegue como anexo), diagramas (.drawio y PNG) y estimación de costos (Excel) |
 | `.github/workflows/` | `ci.yml`, `deploy.yml` (dev → prueba de humo → prod con aprobación), `destroy.yml` |
 
 ## Pruebas locales
@@ -51,9 +51,13 @@ Antes de cada `apply`, el paso **Cost gate** (`scripts/cost_gate.py`) lee el pla
 python3 -m unittest discover -s scripts/tests -v
 ```
 
+## Tiempos del pipeline
+
+Medidos en un ensayo completo: CI 41 s, despliegue a dev 5 min 18 s y despliegue a prod 4 min 28 s, unos 10 minutos de punta a punta sin contar la espera de la aprobación.
+
 ## Puesta en marcha (una sola vez)
 
-Requisitos: Azure CLI, Terraform >= 1.9, suscripción Azure for Students, repo en GitHub.
+Requisitos: Azure CLI, Terraform >= 1.11, suscripción Azure for Students, repo en GitHub.
 
 1. `az login` con la cuenta de la universidad.
 2. Bootstrap:
@@ -75,8 +79,9 @@ Ejecutar el workflow **Destroy** para `prod` y `dev`, y después `terraform dest
 
 ## Decisiones y riesgos conocidos
 
+- **Identidad de GitHub Actions:** es una identidad administrada con credenciales federadas, porque el tenant de la universidad no permite crear aplicaciones de Entra.
 - **Static Web Apps Standard** en prod: el plan Free no tiene SLA ni permite enlazar una Function App propia.
 - **Oferta gratuita de Azure SQL:** al agotar 100.000 vCore-s/mes la base se pausa hasta el mes siguiente (riesgo para la disponibilidad); hay alerta de presupuesto y el consumo se revisa antes de la demo.
 - **Sin private endpoints** para mantener el costo bajo (`.checkov.yml` documenta cada excepción de seguridad).
 - **R11:** la Function App podría aceptar llamadas directas con una cabecera `x-ms-client-principal` falsificada. La prueba de humo lo verifica en prod y emite una advertencia si ocurre.
-- **Estado de verificación:** las 39 pruebas de la API pasan y Checkov no reporta fallos. El Terraform y los workflows **todavía no se han ejecutado contra Azure**; el primer `apply` puede requerir ajustes de nombres de argumentos del proveedor `azurerm`.
+- **Estado de verificación:** CI pasa (39 pruebas de la API, pruebas del control de costos, fmt, validate y Checkov) y el pipeline completo dev → prod se ejecutó con éxito contra Azure.

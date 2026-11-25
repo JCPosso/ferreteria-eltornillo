@@ -1,5 +1,5 @@
 {
-  "_nota": "Precios en USD/mes. Mismos valores del Excel docs/costos/Estimacion_Costos_Ferreteria.xlsx. Confirmar con docs/costos/verificar_precios.sh antes de la entrega.",
+  "_nota": "Precios en USD/mes.",
   "static_web_app": { "Free": 0.0, "Standard": 9.0 },
   "sql_database": {
     "S0": 14.72,
