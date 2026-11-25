@@ -2,7 +2,6 @@
 const { app } = require('@azure/functions');
 const db = require('../lib/db');
 
-/** GET /api/health: público, lo usa el smoke test del pipeline. No devuelve datos del negocio. */
 async function manejador(request, context) {
   try {
     const ok = await db.ping();

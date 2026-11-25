@@ -1,6 +1,5 @@
 'use strict';
 
-// Sedes del negocio (supuesto: 3 sedes). El id es el que se guarda en la base.
 const SEDES = { 1: 'Centro', 2: 'Norte', 3: 'Sur' };
 
 class ErrorValidacion extends Error {
@@ -10,10 +9,6 @@ class ErrorValidacion extends Error {
   }
 }
 
-/**
- * Valida y normaliza los parámetros de una consulta de inventario.
- * Nunca se concatena nada al SQL: estos valores solo se usan como parámetros.
- */
 function validarConsulta({ sede, q, limite } = {}) {
   const sedeId = Number(sede);
   if (!Number.isInteger(sedeId) || !SEDES[sedeId]) {
@@ -36,7 +31,6 @@ function validarConsulta({ sede, q, limite } = {}) {
   return { sedeId, texto, limite: lim };
 }
 
-/** Escapa los comodines de LIKE para que el texto del usuario se busque literal. */
 function patronLike(texto) {
   if (texto === null) return null;
   return '%' + texto.replace(/[\\%_\[]/g, (c) => '\\' + c) + '%';

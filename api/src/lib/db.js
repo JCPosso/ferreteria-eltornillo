@@ -3,10 +3,6 @@ const sql = require('mssql');
 
 let pool;
 
-/**
- * Conexión a Azure SQL con identidad administrada (sin contraseñas).
- * Localmente usa la sesión de "az login" (DefaultAzureCredential).
- */
 function configuracion() {
   const servidor = process.env.SQL_SERVER;
   const base = process.env.SQL_DATABASE;
@@ -27,12 +23,6 @@ async function obtenerPool() {
   return pool;
 }
 
-/**
- * Ejecuta una consulta dentro de una transacción corta.
- * Antes de consultar fija el contexto de sede (SESSION_CONTEXT) que usa la política
- * de Row-Level Security de la base: es una defensa adicional por si se olvida un WHERE.
- * El contexto se fija en cada solicitud, porque la conexión vuelve al pool.
- */
 async function ejecutar({ sedeId, admin }, consulta, parametros) {
   const p = await obtenerPool();
   const tx = new sql.Transaction(p);

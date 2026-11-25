@@ -5,7 +5,6 @@ const { leerPrincipal, esAdmin, puedeVerSede } = require('../lib/auth');
 const { consultarInventario } = require('../lib/inventario');
 const { ErrorValidacion } = require('../lib/validar');
 
-/** GET /api/inventario?sede=1&q=martillo&limite=20 */
 async function manejador(request, context) {
   const principal = leerPrincipal(request.headers);
   if (!principal) return { status: 401, jsonBody: { error: 'no autenticado' } };

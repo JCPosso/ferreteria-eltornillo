@@ -10,10 +10,6 @@ WHERE e.sede_id = @sede
   AND (@patron IS NULL OR p.codigo LIKE @patron ESCAPE '\\' OR p.nombre LIKE @patron ESCAPE '\\')
 ORDER BY p.nombre;`;
 
-/**
- * Consulta el inventario de una sede.
- * @param {object} db  Adaptador con ejecutar(sedeId, esAdmin, sql, params). Ver db.js
- */
 async function consultarInventario(db, parametros, { admin = false } = {}) {
   const { sedeId, texto, limite } = validarConsulta(parametros);
   const filas = await db.ejecutar(

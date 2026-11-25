@@ -1,11 +1,5 @@
 'use strict';
 
-/**
- * Autorización por sede.
- * Static Web Apps envía la identidad del usuario en el encabezado x-ms-client-principal
- * (JSON en base64). Los roles se asignan por invitación: "admin" ve todas las sedes y
- * "sede-1", "sede-2", "sede-3" ve solo esa sede.
- */
 function leerPrincipal(headers) {
   const crudo = typeof headers?.get === 'function'
     ? headers.get('x-ms-client-principal')
@@ -27,7 +21,6 @@ function esAdmin(principal) {
   return !!principal && principal.roles.includes('admin');
 }
 
-/** true si el usuario puede ver la sede indicada. */
 function puedeVerSede(principal, sedeId) {
   if (!principal) return false;
   if (!principal.roles.includes('authenticated') && !esAdmin(principal)) return false;
