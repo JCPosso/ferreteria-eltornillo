@@ -80,7 +80,3 @@ Ejecutar el workflow **Destroy** para `prod` y `dev`, y después `terraform dest
 - **Sin private endpoints** para mantener el costo bajo (`.checkov.yml` documenta cada excepción de seguridad).
 - **R11:** la Function App podría aceptar llamadas directas con una cabecera `x-ms-client-principal` falsificada. La prueba de humo lo verifica en prod y emite una advertencia si ocurre.
 - **Estado de verificación:** las 39 pruebas de la API pasan y Checkov no reporta fallos. El Terraform y los workflows **todavía no se han ejecutado contra Azure**; el primer `apply` puede requerir ajustes de nombres de argumentos del proveedor `azurerm`.
-
-## Commits
-
-Conventional Commits, en inglés, sin coautores.
