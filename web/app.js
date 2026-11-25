@@ -12,6 +12,16 @@ async function cargarUsuario() {
   }
 }
 
+async function cargarVersion() {
+  try {
+    const r = await fetch('/api/health');
+    const { version } = await r.json();
+    $('version').textContent = String(version).slice(0, 7);
+  } catch {
+    return;
+  }
+}
+
 function sedesPermitidas(principal) {
   if (principal.userRoles.includes('admin')) return [1, 2, 3];
   return principal.userRoles
@@ -59,6 +69,7 @@ async function consultar(evento) {
 }
 
 (async () => {
+  cargarVersion();
   const principal = await cargarUsuario();
   if (!principal) { $('acceso').hidden = false; return; }
 
