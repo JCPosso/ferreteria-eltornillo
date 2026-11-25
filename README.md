@@ -39,7 +39,7 @@ Navegador ──HTTPS──> Azure Static Web Apps (Standard) ──> Azure Func
 ```bash
 cd api
 npm ci
-npm test        # 39 pruebas (validación, autorización, consulta, funciones HTTP)
+npm test        # 75 pruebas (validación, autorización, consulta, funciones HTTP)
 npm run lint
 ```
 
@@ -84,4 +84,4 @@ Ejecutar el workflow **Destroy** para `prod` y `dev`, y después `terraform dest
 - **Oferta gratuita de Azure SQL:** al agotar 100.000 vCore-s/mes la base se pausa hasta el mes siguiente (riesgo para la disponibilidad); hay alerta de presupuesto y el consumo se revisa antes de la demo.
 - **Sin private endpoints** para mantener el costo bajo (`.checkov.yml` documenta cada excepción de seguridad).
 - **R11:** la Function App podría aceptar llamadas directas con una cabecera `x-ms-client-principal` falsificada. La prueba de humo lo verifica en prod y emite una advertencia si ocurre.
-- **Estado de verificación:** CI pasa (39 pruebas de la API, pruebas del control de costos, fmt, validate y Checkov) y el pipeline completo dev → prod se ejecutó con éxito contra Azure.
+- **Estado de verificación:** CI pasa (75 pruebas de la API, pruebas del control de costos, fmt, validate y Checkov) y el pipeline completo dev → prod se ejecutó con éxito contra Azure.
