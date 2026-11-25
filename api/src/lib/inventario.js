@@ -22,6 +22,14 @@ JOIN dbo.productos  AS p ON p.id = e.producto_id
 WHERE e.sede_id = @sede
 ORDER BY p.categoria;`;
 
+const SQL_RESUMEN = `
+SELECT COUNT(*) AS productos,
+       ISNULL(SUM(e.cantidad), 0) AS unidades,
+       ISNULL(SUM(CASE WHEN e.cantidad < ${UMBRAL_BAJO} THEN 1 ELSE 0 END), 0) AS bajo,
+       ISNULL(SUM(CASE WHEN e.cantidad = 0 THEN 1 ELSE 0 END), 0) AS agotados
+FROM dbo.existencias AS e
+WHERE e.sede_id = @sede;`;
+
 async function consultarInventario(db, parametros, { admin = false } = {}) {
   const { sedeId, texto, categoria, bajo, limite, pagina, desplazamiento } = validarConsulta(parametros);
   const filas = await db.ejecutar(
@@ -47,4 +55,14 @@ async function listarCategorias(db, { sede }, { admin = false } = {}) {
   return { sede: sedeId, categorias: filas.map((f) => f.categoria) };
 }
 
-module.exports = { consultarInventario, listarCategorias, SQL_CONSULTA, SQL_CATEGORIAS, UMBRAL_BAJO };
+async function resumirSede(db, { sede }, { admin = false } = {}) {
+  const sedeId = validarSede(sede);
+  const filas = await db.ejecutar({ sedeId, admin }, SQL_RESUMEN, { sede: sedeId });
+  const { productos = 0, unidades = 0, bajo = 0, agotados = 0 } = filas[0] || {};
+  return { sede: sedeId, productos, unidades, bajo, agotados, umbralBajo: UMBRAL_BAJO };
+}
+
+module.exports = {
+  consultarInventario, listarCategorias, resumirSede,
+  SQL_CONSULTA, SQL_CATEGORIAS, SQL_RESUMEN, UMBRAL_BAJO,
+};
