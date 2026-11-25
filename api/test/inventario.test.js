@@ -30,7 +30,7 @@ test('el texto del usuario nunca se concatena al SQL', async () => {
   await consultarInventario(db, { sede: 1, q: ataque });
   assert.equal(db.llamadas[0].consulta.includes('DROP'), false);
   assert.equal(db.llamadas[0].consulta, SQL_CONSULTA);
-  assert.equal(db.llamadas[0].parametros.patron.includes('DROP TABLE'), true); // viaja como parámetro
+  assert.equal(db.llamadas[0].parametros.patron.includes('DROP TABLE'), true);
 });
 
 test('el SQL filtra por sede y usa parámetros', () => {
