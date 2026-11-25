@@ -65,6 +65,11 @@ svg { width: 20px; height: 20px; flex: none; }
 a { color: var(--marca); }
 :focus-visible { outline: 2px solid var(--marca); outline-offset: 2px; }
 
+.aviso-entorno { height: 8px; background: repeating-linear-gradient(135deg, #1c1400 0 10px, #fbbf24 10px 20px); }
+.aviso-entorno[hidden] { display: none; }
+.etiqueta-entorno { background: #fbbf24; color: #1c1400; border-radius: 999px; padding: 3px 10px; font-size: 12px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; }
+.etiqueta-entorno[hidden] { display: none; }
+
 .barra-superior { background: var(--superficie); border-bottom: 1px solid var(--borde); position: sticky; top: 0; z-index: 5; }
 .barra-in { max-width: 1120px; margin: 0 auto; padding: 10px 20px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
 .marca { display: flex; align-items: center; gap: 10px; }

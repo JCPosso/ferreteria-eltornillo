@@ -26,6 +26,19 @@ async function cargarUsuario() {
   }
 }
 
+async function cargarEntorno() {
+  try {
+    const r = await fetch('/entorno.json', { cache: 'no-store' });
+    const { entorno } = await r.json();
+    if (entorno !== 'dev') return;
+    $('aviso-entorno').hidden = false;
+    $('etiqueta-entorno').hidden = false;
+    document.title = `[PRUEBAS] ${document.title}`;
+  } catch {
+    return;
+  }
+}
+
 async function cargarVersion() {
   try {
     const r = await fetch('/api/health');
@@ -275,6 +288,7 @@ async function cambiarSede() {
 
 (async () => {
   $('tema').addEventListener('click', alternarTema);
+  cargarEntorno();
   cargarVersion();
   const principal = await cargarUsuario();
   if (!principal) { $('acceso').hidden = false; return; }

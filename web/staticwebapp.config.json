@@ -18,7 +18,7 @@
     "exclude": [
       "/api/*",
       "/.auth/*",
-      "*.{css,js,png,ico,svg}"
+      "*.{css,js,png,ico,svg,json}"
     ]
   },
   "globalHeaders": {
