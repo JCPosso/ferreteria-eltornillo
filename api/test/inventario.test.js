@@ -1,7 +1,7 @@
 'use strict';
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { consultarInventario, listarCategorias, SQL_CONSULTA, SQL_CATEGORIAS, UMBRAL_BAJO } = require('../src/lib/inventario');
+const { consultarInventario, listarCategorias, resumirSede, SQL_CONSULTA, SQL_CATEGORIAS, SQL_RESUMEN, UMBRAL_BAJO } = require('../src/lib/inventario');
 const { ErrorValidacion } = require('../src/lib/validar');
 
 function dbFalsa(filas = []) {
@@ -105,4 +105,30 @@ test('listar categorías con una sede inválida falla antes de la base', async (
   const db = dbFalsa();
   await assert.rejects(() => listarCategorias(db, { sede: 7 }), ErrorValidacion);
   assert.equal(db.llamadas.length, 0);
+});
+
+test('resume la sede con su contexto y el umbral', async () => {
+  const db = dbFalsa([{ productos: 1250, unidades: 34039, bajo: 384, agotados: 116 }]);
+  const r = await resumirSede(db, { sede: '1' }, { admin: true });
+  assert.deepEqual(r, { sede: 1, productos: 1250, unidades: 34039, bajo: 384, agotados: 116, umbralBajo: UMBRAL_BAJO });
+  assert.deepEqual(db.llamadas[0].contexto, { sedeId: 1, admin: true });
+  assert.deepEqual(db.llamadas[0].parametros, { sede: 1 });
+  assert.equal(db.llamadas[0].consulta, SQL_RESUMEN);
+});
+
+test('el resumen de una sede sin filas devuelve ceros', async () => {
+  const r = await resumirSede(dbFalsa([]), { sede: 3 });
+  assert.equal(r.productos, 0);
+  assert.equal(r.unidades, 0);
+});
+
+test('el resumen con una sede inválida falla antes de la base', async () => {
+  const db = dbFalsa();
+  await assert.rejects(() => resumirSede(db, { sede: 9 }), ErrorValidacion);
+  assert.equal(db.llamadas.length, 0);
+});
+
+test('el SQL del resumen filtra por sede y no concatena entradas', () => {
+  assert.match(SQL_RESUMEN, /WHERE e\.sede_id = @sede/);
+  assert.doesNotMatch(SQL_RESUMEN, /\$\{/);
 });

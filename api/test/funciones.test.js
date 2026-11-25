@@ -5,6 +5,7 @@ const assert = require('node:assert/strict');
 const db = require('../src/lib/db');
 const inventario = require('../src/functions/inventario');
 const categorias = require('../src/functions/categorias');
+const resumen = require('../src/functions/resumen');
 const health = require('../src/functions/health');
 
 const contexto = { warn() {}, error() {}, log() {} };
@@ -105,4 +106,36 @@ test('inventario: pasa categoría, stock bajo y página a la consulta', async ()
   assert.equal(recibido.categoria, 'Pintura');
   assert.equal(recibido.bajo, 1);
   assert.equal(recibido.desplazamiento, 25);
+});
+
+test('resumen: 401 sin identidad', async () => {
+  const r = await resumen.manejador(peticion('sede=1'), contexto);
+  assert.equal(r.status, 401);
+});
+
+test('resumen: 403 al pedir otra sede', async () => {
+  db.ejecutar = async () => { throw new Error('no debe llamarse'); };
+  const r = await resumen.manejador(peticion('sede=2', empleado(1)), contexto);
+  assert.equal(r.status, 403);
+});
+
+test('resumen: 400 con una sede inválida', async () => {
+  const admin = { userDetails: 'admin@tornillo.co', userRoles: ['authenticated', 'admin'] };
+  const r = await resumen.manejador(peticion('sede=9', admin), contexto);
+  assert.equal(r.status, 400);
+});
+
+test('resumen: 200 con los totales de su sede', async () => {
+  db.ejecutar = async () => [{ productos: 10, unidades: 120, bajo: 3, agotados: 1 }];
+  const r = await resumen.manejador(peticion('sede=1', empleado(1)), contexto);
+  assert.equal(r.status, 200);
+  assert.equal(r.jsonBody.productos, 10);
+  assert.equal(r.jsonBody.agotados, 1);
+});
+
+test('resumen: 500 sin filtrar detalles', async () => {
+  db.ejecutar = async () => { throw new Error('login failed for user secreto'); };
+  const r = await resumen.manejador(peticion('sede=1', empleado(1)), contexto);
+  assert.equal(r.status, 500);
+  assert.equal(JSON.stringify(r.jsonBody).includes('secreto'), false);
 });
