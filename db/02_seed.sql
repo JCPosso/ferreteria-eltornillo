@@ -1,5 +1,3 @@
--- Datos de ejemplo para el MVP (ficticios). Idempotente.
--- Se marca la sesión como administrador para que la seguridad por fila permita cargar datos.
 EXEC sp_set_session_context @key = N'es_admin', @value = 1, @read_only = 0;
 GO
 MERGE dbo.sedes AS t
@@ -43,7 +41,6 @@ USING (VALUES
 ON t.codigo = s.codigo
 WHEN NOT MATCHED THEN INSERT (codigo, nombre, categoria) VALUES (s.codigo, s.nombre, s.categoria);
 GO
--- Existencias iniciales deterministas (distintas por sede) para poder probar.
 INSERT INTO dbo.existencias (sede_id, producto_id, cantidad)
 SELECT s.id, p.id, ((p.id * 7 + s.id * 13) % 90) + 5
 FROM dbo.sedes AS s

@@ -1,4 +1,3 @@
--- Esquema de inventario de Ferretería El Tornillo. Idempotente: se puede ejecutar varias veces.
 IF OBJECT_ID(N'dbo.sedes') IS NULL
   CREATE TABLE dbo.sedes (
     id     INT          NOT NULL CONSTRAINT pk_sedes PRIMARY KEY,
@@ -22,7 +21,6 @@ IF OBJECT_ID(N'dbo.existencias') IS NULL
     CONSTRAINT pk_existencias PRIMARY KEY (sede_id, producto_id)
   );
 GO
--- Los movimientos solo se agregan (nunca se editan). Se usarán en el diseño completo (RF4).
 IF OBJECT_ID(N'dbo.movimientos') IS NULL
   CREATE TABLE dbo.movimientos (
     id          BIGINT IDENTITY(1,1) NOT NULL CONSTRAINT pk_movimientos PRIMARY KEY,

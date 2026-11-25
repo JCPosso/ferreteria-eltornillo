@@ -1,6 +1,3 @@
--- Seguridad por fila (Row-Level Security): cada solicitud fija su sede con SESSION_CONTEXT.
--- Es una defensa adicional: si alguien olvida el WHERE sede_id, la base no entrega otras sedes.
--- No protege contra una aplicación comprometida, porque la propia aplicación fija el contexto.
 IF SCHEMA_ID(N'seguridad') IS NULL EXEC (N'CREATE SCHEMA seguridad');
 GO
 IF EXISTS (SELECT 1 FROM sys.security_policies WHERE name = N'politica_sede')

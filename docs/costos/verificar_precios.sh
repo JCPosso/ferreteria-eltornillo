@@ -1,11 +1,8 @@
 #!/usr/bin/env bash
-# Consulta la API pública de precios de Azure (Retail Prices API, sin login) y muestra los
-# precios que usa Estimacion_Costos_Ferreteria.xlsx. Requiere curl y jq.
-# Compare con la hoja "Precios" y corrija las celdas amarillas.
 set -euo pipefail
 API="https://prices.azure.com/api/retail/prices?currencyCode=USD"
 R="armRegionName%20eq%20'centralus'"
-q() { # $1 = filtro OData ya codificado
+q() {
   curl -fsS "${API}&\$filter=$1" | jq -r '.Items[] | [.serviceName, .productName, .skuName, .meterName, .unitOfMeasure, .retailPrice] | @tsv'
 }
 echo "== Functions (consumo)";  q "serviceName%20eq%20'Functions'%20and%20${R}%20and%20priceType%20eq%20'Consumption'" | grep -Ei "execution|total" || true

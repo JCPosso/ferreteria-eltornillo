@@ -37,7 +37,7 @@ function mostrarTabla(items) {
     const fila = document.createElement('tr');
     for (const [clave, clase] of [['codigo'], ['nombre'], ['categoria'], ['cantidad', 'num']]) {
       const celda = document.createElement('td');
-      celda.textContent = it[clave]; // textContent: nunca HTML
+      celda.textContent = it[clave];
       if (clase) celda.className = clase;
       if (clave === 'cantidad' && it.cantidad < 15) celda.classList.add('bajo');
       fila.appendChild(celda);

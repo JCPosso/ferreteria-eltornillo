@@ -1,12 +1,4 @@
 'use strict';
-/**
- * Crea el esquema, los datos de ejemplo, la seguridad por fila y el usuario de la Function App.
- * Usa un token de Microsoft Entra (el del pipeline o el de "az login"), sin contraseñas.
- *
- *   SQL_SERVER=xxx.database.windows.net SQL_DATABASE=inventario IDENTITY_NAME=id-xxx-api IDENTITY_CLIENT_ID=<guid> \
- *   SQL_ACCESS_TOKEN=$(az account get-access-token --resource https://database.windows.net/ --query accessToken -o tsv) \
- *   node scripts/db-init.js
- */
 const fs = require('node:fs');
 const path = require('node:path');
 const sql = require(path.join(__dirname, '..', 'api', 'node_modules', 'mssql'));
@@ -26,8 +18,6 @@ if (!/^[0-9a-fA-F-]{36}$/.test(process.env.IDENTITY_CLIENT_ID)) {
   process.exit(1);
 }
 
-// La conexión puede tardar: la regla de firewall tarda en propagarse y la base serverless
-// puede estar reanudándose. Se reintenta en vez de fallar a la primera.
 async function conectar() {
   const intentos = 8;
   for (let i = 1; i <= intentos; i++) {
@@ -39,7 +29,7 @@ async function conectar() {
         options: { encrypt: true },
         connectionTimeout: 30000,
         requestTimeout: 60000,
-        pool: { max: 1, min: 1 }, // una sola conexión: SESSION_CONTEXT debe sobrevivir entre lotes
+        pool: { max: 1, min: 1 },
       }).connect();
     } catch (e) {
       if (i === intentos) throw e;
