@@ -134,7 +134,6 @@ jobs:
           skip_api_build: true
 
       - name: Verify the SWA identity provider on the API
-        if: inputs.environment == 'prod'
         env:
           SWA_NAME: ${{ steps.tf.outputs.swa_name }}
           RG: ${{ steps.tf.outputs.resource_group }}

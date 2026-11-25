@@ -210,6 +210,7 @@ async function consultar(nuevaPagina = 1) {
     if (id !== solicitud) return;
     if (r.status === 403) throw new Error('No tiene permiso para esta sede.');
     if (r.status === 401) throw new Error('Su sesión expiró. Inicie sesión de nuevo.');
+    if (r.status === 404) throw new Error('La API no está disponible en este ambiente.');
     if (!r.ok) throw new Error(datos.error || 'No se pudo consultar el inventario.');
     if (datos.items.length === 0 && pagina > 1) {
       consultar(1);

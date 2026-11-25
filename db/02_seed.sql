@@ -47,3 +47,10 @@ FROM dbo.sedes AS s
 CROSS JOIN dbo.productos AS p
 WHERE NOT EXISTS (SELECT 1 FROM dbo.existencias e WHERE e.sede_id = s.id AND e.producto_id = p.id);
 GO
+UPDATE e SET e.cantidad = 0
+FROM dbo.existencias AS e
+JOIN dbo.productos AS p ON p.id = e.producto_id
+JOIN (VALUES (1, N'TOR-004'), (1, N'ELE-003'), (2, N'PIN-003'), (2, N'CON-001'), (3, N'HER-005'), (3, N'PLO-002')) AS a (sede_id, codigo)
+  ON a.sede_id = e.sede_id AND a.codigo = p.codigo
+WHERE e.cantidad <> 0;
+GO

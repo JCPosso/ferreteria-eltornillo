@@ -1,11 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-if [ "${ENVIRONMENT:-}" = "prod" ]; then
-  API="${SWA_URL}"
-else
-  API="https://${FUNC_NAME}.azurewebsites.net"
-fi
+API="${SWA_URL}"
 RETRY=(--retry 12 --retry-delay 15 --retry-all-errors --max-time 30 -sS)
 
 echo "1) Frontend responde"
@@ -19,14 +15,12 @@ CODE=$(curl -sS -o /dev/null -w "%{http_code}" "${API}/api/inventario?sede=1&q=m
 echo "   ${CODE}"
 case "$CODE" in 401|403) ;; *) echo "ERROR: se esperaba 401 o 403"; exit 1;; esac
 
-if [ "${ENVIRONMENT:-}" = "prod" ]; then
-  echo "4) Llamada directa a la Function App con cabecera falsa (informativo)"
-  FAKE=$(printf '{"userId":"x","userRoles":["authenticated","admin"]}' | base64 -w0)
-  CODE=$(curl -sS -o /dev/null -w "%{http_code}" -H "x-ms-client-principal: ${FAKE}" \
-    "https://${FUNC_NAME}.azurewebsites.net/api/inventario?sede=1")
-  echo "   ${CODE}"
-  if [ "$CODE" = "200" ]; then
-    echo "::warning::R11: la Function App acepta cabeceras falsificadas en llamadas directas. Restringir el acceso (ver README)."
-  fi
+echo "4) Llamada directa a la Function App con cabecera falsa (informativo)"
+FAKE=$(printf '{"userId":"x","userRoles":["authenticated","admin"]}' | base64 -w0)
+CODE=$(curl -sS -o /dev/null -w "%{http_code}" -H "x-ms-client-principal: ${FAKE}" \
+  "https://${FUNC_NAME}.azurewebsites.net/api/inventario?sede=1")
+echo "   ${CODE}"
+if [ "$CODE" = "200" ]; then
+  echo "::warning::R11: la Function App acepta cabeceras falsificadas en llamadas directas. Restringir el acceso (ver README)."
 fi
 echo "Smoke test OK"

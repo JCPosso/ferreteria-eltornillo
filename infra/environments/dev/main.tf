@@ -43,7 +43,7 @@ variable "app_version" {
 module "app" {
   source              = "../../modules/app"
   name                = "tornillo-dev"
-  swa_sku             = "Free"
+  swa_sku             = "Standard"
   tenant_id           = var.tenant_id
   sql_admin_login     = var.sql_admin_login
   sql_admin_object_id = var.sql_admin_object_id
