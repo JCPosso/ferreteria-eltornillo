@@ -4,7 +4,7 @@ variable "name" {
 }
 
 variable "location" {
-  description = "Región de Azure (Central US funcionó en el Laboratorio 8)"
+  description = "Región de Azure"
   type        = string
   default     = "centralus"
 }

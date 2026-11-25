@@ -2,8 +2,7 @@
 #  - el almacenamiento del estado de Terraform (solo Entra ID, sin llaves),
 #  - la identidad que usa GitHub Actions (OIDC, sin secretos) y sus permisos.
 #
-# La identidad es una identidad administrada asignada por el usuario (igual que en el Laboratorio 8)
-# y no una aplicación de Entra: el tenant de la universidad no permite crear aplicaciones ni
+# La identidad es una identidad administrada asignada por el usuario y no una aplicación de Entra: el tenant de la universidad no permite crear aplicaciones ni
 # service principals (Authorization_RequestDenied).
 terraform {
   required_version = ">= 1.11"
@@ -41,7 +40,7 @@ variable "github_repo" {
 }
 
 variable "github_subject_repo" {
-  description = "Parte del subject de OIDC. Los repos nuevos usan IDs: OWNER@ID/REPO@ID (ver error AADSTS700213 del Lab 8). Vacío = dueño/nombre."
+  description = "Parte del subject de OIDC. Los repos nuevos usan IDs: OWNER@ID/REPO@ID (ver error AADSTS700213). Vacío = dueño/nombre."
   type        = string
   default     = ""
 }

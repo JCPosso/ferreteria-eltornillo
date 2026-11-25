@@ -86,7 +86,7 @@ resource "azurerm_mssql_server" "main" {
 }
 
 # azurerm no expone la oferta gratuita (useFreeLimit), por eso la base se crea con azapi
-# (mismo enfoque que el Laboratorio 8). La oferta con AutoPause no acepta tamaño ni pausa
+# La oferta con AutoPause no acepta tamaño ni pausa
 # propios: solo se declara lo que la documentación permite.
 # Al agotar el cupo la base se pausa hasta el mes siguiente (riesgo R2 del HLD).
 resource "azapi_resource" "inventario" {
