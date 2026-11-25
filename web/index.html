@@ -3,73 +3,134 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
   <title>Ferretería El Tornillo · Inventario</title>
+  <script src="tema.js"></script>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <header>
-    <div class="marca">
-      <h1>Ferretería El Tornillo</h1>
-      <span>Inventario por sede</span>
+  <svg class="sprite" aria-hidden="true" focusable="false">
+    <symbol id="i-logo" viewBox="0 0 24 24"><path d="M12 2.5 20 7v10l-8 4.5L4 17V7z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M8.5 9.2 15.5 13M8.5 12.2l7 3.8M8.5 15.2l5 2.8" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="m16 16 4.5 4.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+    <symbol id="i-box" viewBox="0 0 24 24"><path d="M3.5 7.5 12 3l8.5 4.5v9L12 21l-8.5-4.5z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M3.8 7.7 12 12l8.2-4.3M12 12v9" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></symbol>
+    <symbol id="i-stack" viewBox="0 0 24 24"><path d="m12 3 9 4.5-9 4.5-9-4.5zM3 12l9 4.5 9-4.5M3 16.5 12 21l9-4.5" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></symbol>
+    <symbol id="i-alert" viewBox="0 0 24 24"><path d="M12 3.5 21.5 20h-19z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M12 10v4.5M12 17.2v.1" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="m9 9 6 6m0-6-6 6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></symbol>
+    <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M12 2.5v2.3M12 19.2v2.3M2.5 12h2.3M19.2 12h2.3M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M18.7 5.3l-1.6 1.6M6.9 17.1l-1.6 1.6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></symbol>
+    <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 14.5A8 8 0 0 1 9.5 4 8 8 0 1 0 20 14.5z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></symbol>
+    <symbol id="i-empty" viewBox="0 0 24 24"><path d="M3.5 8.5 12 4l8.5 4.5v7L12 20l-8.5-4.5z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="m9.5 10.5 5 3m0-3-5 3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></symbol>
+  </svg>
+
+  <a class="saltar" href="#contenido">Saltar al contenido</a>
+
+  <header class="barra-superior">
+    <div class="barra-in">
+      <div class="marca">
+        <span class="logo"><svg><use href="#i-logo"/></svg></span>
+        <span class="marca-texto"><strong>El Tornillo</strong><small>Ferretería</small></span>
+      </div>
+      <div class="barra-der">
+        <button type="button" id="tema" class="icono" aria-label="Cambiar tema">
+          <svg class="sol"><use href="#i-sun"/></svg>
+          <svg class="luna"><use href="#i-moon"/></svg>
+        </button>
+        <div id="usuario" class="usuario" hidden>
+          <span id="avatar" class="avatar" aria-hidden="true"></span>
+          <span id="correo" class="correo"></span>
+          <a id="salir" href="/.auth/logout?post_logout_redirect_uri=/">Salir</a>
+        </div>
+      </div>
     </div>
-    <div id="usuario" aria-live="polite"></div>
   </header>
 
-  <main>
-    <section id="acceso" class="panel centrado" hidden>
-      <p>Para consultar el inventario inicie sesión con su cuenta.</p>
-      <a class="boton" href="/.auth/login/aad?post_login_redirect_uri=/">Iniciar sesión</a>
+  <main id="contenido">
+    <section id="acceso" class="acceso" hidden>
+      <div class="acceso-tarjeta">
+        <span class="logo grande"><svg><use href="#i-logo"/></svg></span>
+        <h1>Inventario de El Tornillo</h1>
+        <p id="acceso-texto">Consulte las existencias de cada sede con su cuenta institucional.</p>
+        <a id="acceso-boton" class="boton" href="/.auth/login/aad?post_login_redirect_uri=/">Iniciar sesión</a>
+      </div>
     </section>
 
     <section id="consulta" hidden>
-      <h2>Consultar inventario</h2>
-      <form id="formulario" class="panel filtros">
-        <label>Sede
-          <select id="sede" required></select>
-        </label>
-        <label class="ancha">Buscar por código o nombre
-          <input id="q" type="search" maxlength="50" placeholder="Ej.: martillo o HER-001" autocomplete="off">
-        </label>
-        <label>Categoría
-          <select id="categoria">
-            <option value="">Todas</option>
-          </select>
-        </label>
-        <label class="casilla">
-          <input id="bajo" type="checkbox">
-          <span>Solo stock bajo</span>
-        </label>
-        <div class="acciones">
-          <button type="submit" class="boton">Consultar</button>
-          <button type="button" id="limpiar" class="boton secundario">Limpiar</button>
+      <div class="titulo">
+        <div>
+          <h1>Inventario</h1>
+          <p id="subtitulo">Existencias por sede</p>
         </div>
-      </form>
-
-      <p id="estado" role="status" aria-live="polite"></p>
-
-      <div id="contenedor" class="tabla-contenedor" hidden>
-        <table id="tabla">
-          <thead>
-            <tr>
-              <th scope="col">Código</th>
-              <th scope="col">Producto</th>
-              <th scope="col" class="cat">Categoría</th>
-              <th scope="col" class="num">Existencias</th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
+        <fieldset id="sedes" class="segmentos">
+          <legend class="solo-lector">Sede</legend>
+        </fieldset>
       </div>
 
-      <nav id="paginacion" class="paginacion" aria-label="Paginación" hidden>
-        <button type="button" id="anterior" class="boton secundario">Anterior</button>
-        <span id="pagina"></span>
-        <button type="button" id="siguiente" class="boton secundario">Siguiente</button>
-      </nav>
+      <div class="resumen" id="resumen" aria-live="polite">
+        <article class="tarjeta">
+          <span class="ico azul"><svg><use href="#i-box"/></svg></span>
+          <div><p>Productos</p><strong id="r-productos">—</strong></div>
+        </article>
+        <article class="tarjeta">
+          <span class="ico verde"><svg><use href="#i-stack"/></svg></span>
+          <div><p>Unidades</p><strong id="r-unidades">—</strong></div>
+        </article>
+        <button type="button" id="r-bajo-boton" class="tarjeta accion" aria-pressed="false">
+          <span class="ico ambar"><svg><use href="#i-alert"/></svg></span>
+          <div><p>Stock bajo</p><strong id="r-bajo">—</strong></div>
+          <span id="r-bajo-pista" class="pista">Filtrar</span>
+        </button>
+        <article class="tarjeta">
+          <span class="ico rojo"><svg><use href="#i-x"/></svg></span>
+          <div><p>Agotados</p><strong id="r-agotados">—</strong></div>
+        </article>
+      </div>
+
+      <form id="formulario" class="filtros">
+        <label class="campo buscar">
+          <span class="solo-lector">Buscar por código o nombre</span>
+          <svg class="lupa"><use href="#i-search"/></svg>
+          <input id="q" type="search" maxlength="50" placeholder="Buscar por código o nombre" autocomplete="off">
+        </label>
+        <label class="campo">
+          <span class="solo-lector">Categoría</span>
+          <select id="categoria"><option value="">Todas las categorías</option></select>
+        </label>
+        <label class="interruptor">
+          <input id="bajo" type="checkbox">
+          <span class="pista-int"></span>
+          <span>Solo stock bajo</span>
+        </label>
+        <button type="button" id="limpiar" class="boton secundario">Limpiar</button>
+      </form>
+
+      <div class="panel-tabla">
+        <p id="estado" class="estado" role="status" aria-live="polite"></p>
+        <div id="contenedor" class="tabla-contenedor" aria-busy="false">
+          <table id="tabla">
+            <thead>
+              <tr>
+                <th scope="col">Código</th>
+                <th scope="col">Producto</th>
+                <th scope="col" class="cat">Categoría</th>
+                <th scope="col">Existencias</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <div id="vacio" class="vacio" hidden>
+          <svg><use href="#i-empty"/></svg>
+          <p id="vacio-texto">Sin resultados para los filtros elegidos.</p>
+        </div>
+        <nav id="paginacion" class="paginacion" aria-label="Paginación" hidden>
+          <button type="button" id="anterior" class="boton secundario">Anterior</button>
+          <span id="pagina"></span>
+          <button type="button" id="siguiente" class="boton secundario">Siguiente</button>
+        </nav>
+      </div>
     </section>
   </main>
 
-  <footer>Versión <span id="version">dev</span></footer>
+  <footer class="pie">Ferretería El Tornillo · Versión <span id="version">dev</span></footer>
   <script src="app.js"></script>
 </body>
 </html>
