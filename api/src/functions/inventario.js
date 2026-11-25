@@ -17,7 +17,14 @@ async function manejador(request, context) {
     }
     const resultado = await consultarInventario(
       db,
-      { sede, q: request.query.get('q'), limite: request.query.get('limite') },
+      {
+        sede,
+        q: request.query.get('q'),
+        limite: request.query.get('limite'),
+        categoria: request.query.get('categoria'),
+        bajo: request.query.get('bajo'),
+        pagina: request.query.get('pagina'),
+      },
       { admin: esAdmin(principal) },
     );
     return { status: 200, jsonBody: resultado };
