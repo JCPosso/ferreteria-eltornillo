@@ -3,10 +3,14 @@ const fs = require('node:fs');
 const path = require('node:path');
 const sql = require(path.join(__dirname, '..', 'api', 'node_modules', 'mssql'));
 
-const requeridas = ['SQL_SERVER', 'SQL_DATABASE', 'IDENTITY_NAME', 'IDENTITY_CLIENT_ID', 'SQL_ACCESS_TOKEN'];
+const requeridas = ['SQL_SERVER', 'SQL_DATABASE', 'IDENTITY_NAME', 'IDENTITY_CLIENT_ID', 'SQL_ACCESS_TOKEN', 'ENTORNO'];
 const faltan = requeridas.filter((v) => !process.env[v]);
 if (faltan.length) {
   console.error(`Faltan variables de entorno: ${faltan.join(', ')}`);
+  process.exit(1);
+}
+if (!/^(dev|prod)$/.test(process.env.ENTORNO)) {
+  console.error('ENTORNO debe ser dev o prod');
   process.exit(1);
 }
 if (!/^[A-Za-z0-9-]+$/.test(process.env.IDENTITY_NAME)) {
@@ -43,7 +47,14 @@ async function conectar() {
   const pool = await conectar();
 
   const dir = path.join(__dirname, '..', 'db');
-  const archivos = fs.readdirSync(dir).filter((f) => f.endsWith('.sql')).sort();
+  const archivos = fs
+    .readdirSync(dir)
+    .filter((f) => f.endsWith('.sql'))
+    .filter((f) => {
+      const propio = /\.(dev|prod)\.sql$/.exec(f);
+      return !propio || propio[1] === process.env.ENTORNO;
+    })
+    .sort();
   for (const archivo of archivos) {
     const texto = fs.readFileSync(path.join(dir, archivo), 'utf8').replaceAll('$(IDENTITY_NAME)', process.env.IDENTITY_NAME).replaceAll('$(IDENTITY_CLIENT_ID)', process.env.IDENTITY_CLIENT_ID);
     const lotes = texto.split(/^\s*GO\s*$/im).map((l) => l.trim()).filter(Boolean);

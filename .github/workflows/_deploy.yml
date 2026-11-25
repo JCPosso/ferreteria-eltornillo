@@ -112,6 +112,7 @@ jobs:
           echo "::add-mask::$SQL_ACCESS_TOKEN"
           SQL_SERVER="${{ steps.tf.outputs.sql_server_fqdn }}" \
           SQL_DATABASE="${{ steps.tf.outputs.sql_database }}" \
+          ENTORNO="${{ inputs.environment }}" \
           IDENTITY_NAME="${{ steps.tf.outputs.identity_name }}" \
           IDENTITY_CLIENT_ID="${{ steps.tf.outputs.identity_client_id }}" \
           node scripts/db-init.js

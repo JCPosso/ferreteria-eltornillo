@@ -55,7 +55,7 @@ Los parámetros se validan antes de tocar la base y llegan a SQL siempre como pa
 |---|---|
 | `api/` | API de inventario (Azure Functions, Node.js 22) y pruebas (`npm test`) |
 | `web/` | Frontend estático y `staticwebapp.config.json` (rutas protegidas, cabeceras de seguridad) |
-| `db/` | Esquema, datos de ejemplo (30 productos por sede, con algunos agotados), Row-Level Security y usuario de la identidad administrada |
+| `db/` | Esquema, datos de ejemplo distintos para dev y prod (`02_seed.dev.sql` y `02_seed.prod.sql`), Row-Level Security y usuario de la identidad administrada |
 | `scripts/` | `db-init.js` (inicializa la base con token Entra), `smoke-test.sh`, `cost_gate.py` (control de costos) y `verificar_precios.sh` |
 | `infra/bootstrap` | Se ejecuta una vez a mano: estado remoto de Terraform + identidad OIDC de GitHub |
 | `infra/modules/app` | Todos los recursos de un ambiente |
@@ -91,7 +91,7 @@ python3 -m unittest discover -s scripts/tests -v
 
 ## Datos de ejemplo y roles
 
-`db/02_seed.sql` carga 30 productos en las 3 sedes con existencias de ejemplo y deja algunos en cero para ver el estado Agotado; es idempotente y corre en cada despliegue. Para dar acceso a un usuario: en el portal de Azure, *Static Web App → Role management → Invite*, con los roles `sede-1`, `sede-2`, `sede-3` o `admin`.
+Cada entorno carga sus propios datos de ejemplo en cada despliegue. Los archivos `db/NN_nombre.dev.sql` y `db/NN_nombre.prod.sql` solo corren en su entorno; los demás corren en los dos. En prod, `02_seed.prod.sql` carga 30 productos en las 3 sedes con algunos en cero para ver el estado Agotado y es idempotente. En dev, `02_seed.dev.sql` reemplaza el catálogo por 41 productos pensados para probar: existencias en 0, 1, 14, 15 y 16 (el umbral de stock bajo es 15), cantidades grandes, un nombre largo, un producto que solo existe en la sede Centro y más de 25 productos por sede para la paginación. Por eso dev se reinicia a ese estado en cada despliegue, y nunca debe tener datos que importen. Para dar acceso a un usuario: en el portal de Azure, *Static Web App → Role management → Invite*, con los roles `sede-1`, `sede-2`, `sede-3` o `admin`.
 
 ## Solución de problemas
 
