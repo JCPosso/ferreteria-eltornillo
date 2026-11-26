@@ -93,6 +93,9 @@ a { color: var(--marca); }
 .usuario { display: flex; align-items: center; gap: 10px; padding-left: 12px; border-left: 1px solid var(--borde); }
 .avatar { display: grid; place-items: center; width: 32px; height: 32px; border-radius: 50%; background: var(--marca-tinte); color: var(--marca); font-weight: 700; font-size: 14px; text-transform: uppercase; }
 .correo { color: var(--suave); font-size: 13px; max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.rol { display: inline-block; padding: 3px 10px; border-radius: 999px; font-size: 12px; font-weight: 600; white-space: nowrap; background: var(--verde-t); color: var(--verde); }
+.rol.admin { background: var(--azul-t); color: var(--azul); }
+.rol.sin-sede { background: var(--ambar-t); color: var(--ambar); }
 .usuario a { font-size: 13px; font-weight: 600; text-decoration: none; }
 .usuario a:hover { text-decoration: underline; }
 

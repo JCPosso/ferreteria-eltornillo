@@ -39,6 +39,13 @@ async function cargarEntorno() {
   }
 }
 
+function etiquetaDeRol(principal) {
+  if (principal.userRoles.includes('admin')) return { texto: 'Administrador', clase: 'admin' };
+  const sedes = sedesPermitidas(principal);
+  if (sedes.length === 0) return { texto: 'Sin sede asignada', clase: 'sin-sede' };
+  return { texto: `Empleado · ${sedes.map((s) => NOMBRES[s]).join(', ')}`, clase: '' };
+}
+
 async function cargarVersion() {
   try {
     const r = await fetch('/api/health');
@@ -295,6 +302,9 @@ async function cambiarSede() {
 
   $('correo').textContent = principal.userDetails;
   $('avatar').textContent = principal.userDetails.charAt(0);
+  const rol = etiquetaDeRol(principal);
+  $('rol').textContent = rol.texto;
+  $('rol').className = `rol ${rol.clase}`.trim();
   $('usuario').hidden = false;
 
   const sedes = sedesPermitidas(principal);
