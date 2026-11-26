@@ -24,7 +24,7 @@ function esAdmin(principal) {
 function puedeVerSede(principal, sedeId) {
   if (!principal) return false;
   if (!principal.roles.includes('authenticated') && !esAdmin(principal)) return false;
-  return esAdmin(principal) || principal.roles.includes(`sede-${sedeId}`);
+  return esAdmin(principal) || principal.roles.includes(`sede_${sedeId}`) || principal.roles.includes(`sede-${sedeId}`);
 }
 
 module.exports = { leerPrincipal, esAdmin, puedeVerSede };

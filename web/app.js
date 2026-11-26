@@ -52,7 +52,7 @@ async function cargarVersion() {
 function sedesPermitidas(principal) {
   if (principal.userRoles.includes('admin')) return [1, 2, 3];
   return principal.userRoles
-    .map((rol) => /^sede-(\d)$/.exec(rol))
+    .map((rol) => /^sede[_-](\d)$/.exec(rol))
     .filter(Boolean)
     .map((m) => Number(m[1]));
 }

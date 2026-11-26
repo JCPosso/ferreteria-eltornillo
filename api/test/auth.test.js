@@ -42,6 +42,12 @@ test('sin principal no se ve ninguna sede', () => {
   assert.equal(puedeVerSede(null, 1), false);
 });
 
+test('el rol sede_N con guion bajo también da acceso a su sede', () => {
+  const p = { usuario: 'x', roles: ['authenticated', 'sede_2'] };
+  assert.equal(puedeVerSede(p, 2), true);
+  assert.equal(puedeVerSede(p, 1), false);
+});
+
 test('un rol de sede sin estar autenticado no basta', () => {
   assert.equal(puedeVerSede({ usuario: 'x', roles: ['sede-1'] }, 1), false);
 });

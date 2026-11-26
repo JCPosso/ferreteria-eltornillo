@@ -91,7 +91,7 @@ python3 -m unittest discover -s scripts/tests -v
 
 ## Datos de ejemplo y roles
 
-Cada entorno carga sus propios datos de ejemplo en cada despliegue. Los archivos `db/NN_nombre.dev.sql` y `db/NN_nombre.prod.sql` solo corren en su entorno; los demás corren en los dos. En prod, `02_seed.prod.sql` carga 30 productos en las 3 sedes con algunos en cero para ver el estado Agotado y es idempotente. En dev, `02_seed.dev.sql` reemplaza el catálogo por 41 productos pensados para probar: existencias en 0, 1, 14, 15 y 16 (el umbral de stock bajo es 15), cantidades grandes, un nombre largo, un producto que solo existe en la sede Centro y más de 25 productos por sede para la paginación. Por eso dev se reinicia a ese estado en cada despliegue, y nunca debe tener datos que importen. Para dar acceso a un usuario: en el portal de Azure, *Static Web App → Role management → Invite*, con los roles `sede-1`, `sede-2`, `sede-3` o `admin`.
+Cada entorno carga sus propios datos de ejemplo en cada despliegue. Los archivos `db/NN_nombre.dev.sql` y `db/NN_nombre.prod.sql` solo corren en su entorno; los demás corren en los dos. En prod, `02_seed.prod.sql` carga 30 productos en las 3 sedes con algunos en cero para ver el estado Agotado y es idempotente. En dev, `02_seed.dev.sql` reemplaza el catálogo por 41 productos pensados para probar: existencias en 0, 1, 14, 15 y 16 (el umbral de stock bajo es 15), cantidades grandes, un nombre largo, un producto que solo existe en la sede Centro y más de 25 productos por sede para la paginación. Por eso dev se reinicia a ese estado en cada despliegue, y nunca debe tener datos que importen. Para dar acceso a un usuario: en el portal de Azure, *Static Web App → Role management → Invite*, con los roles `sede_1`, `sede_2`, `sede_3` o `admin`.
 
 ## Solución de problemas
 
@@ -114,7 +114,7 @@ Requisitos: Azure CLI, Terraform >= 1.11, suscripción Azure for Students, repo 
 3. En GitHub, *Settings → Secrets and variables → Actions → Variables*, crea (son identificadores, no secretos): `AZURE_CLIENT_ID`, `AZURE_TENANT_ID`, `AZURE_SUBSCRIPTION_ID`, `SQL_ADMIN_OBJECT_ID`, `SQL_ADMIN_LOGIN`, `TFSTATE_RESOURCE_GROUP`, `TFSTATE_STORAGE_ACCOUNT`, `TFSTATE_CONTAINER` (los entrega `terraform output`) y `BUDGET_EMAIL` (obligatoria: correo de las alertas de presupuesto y de errores; sin ella el plan falla).
 4. *Settings → Environments*: crea `dev` y `prod`; en `prod` agrega **Required reviewers**.
 5. `git push` a `main`: se ejecuta CI → deploy dev → prueba de humo → (aprobación) → deploy prod.
-6. Dar acceso a usuarios: en el portal de Azure, *Static Web App → Role management → Invite*, con los roles `sede-1`, `sede-2`, `sede-3` o `admin`.
+6. Dar acceso a usuarios: en el portal de Azure, *Static Web App → Role management → Invite*, con los roles `sede_1`, `sede_2`, `sede_3` o `admin` (el portal solo acepta letras, números y guion bajo en los roles; la API reconoce también `sede-1`).
 
 ## Limpieza (importante: cada ambiente con Static Web Apps Standard cuesta USD 9/mes)
 
