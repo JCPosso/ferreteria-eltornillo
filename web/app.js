@@ -94,7 +94,7 @@ async function cargarCategorias() {
 }
 
 function ponerResumen(r) {
-  const valor = (n) => (typeof n === 'number' ? formato.format(n) : '—');
+  const valor = (n) => (typeof n === 'number' ? formato.format(n) : '-');
   $('r-productos').textContent = valor(r?.productos);
   $('r-unidades').textContent = valor(r?.unidades);
   $('r-bajo').textContent = valor(r?.bajo);
@@ -246,7 +246,7 @@ async function consultar(nuevaPagina = 1) {
       const inicio = (pagina - 1) * POR_PAGINA + 1;
       const fin = inicio + datos.items.length - 1;
       $('estado').textContent =
-        `Mostrando ${formato.format(inicio)}–${formato.format(fin)} de ${formato.format(datos.total)} producto(s) · Sede ${NOMBRES[datos.sede]}`;
+        `Mostrando ${formato.format(inicio)} a ${formato.format(fin)} de ${formato.format(datos.total)} producto(s) · Sede ${NOMBRES[datos.sede]}`;
     }
   } catch (e) {
     if (id !== solicitud) return;

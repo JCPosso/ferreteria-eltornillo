@@ -1,4 +1,4 @@
-# Ferretería "El Tornillo" — inventario compartido en la nube
+# Ferretería "El Tornillo": inventario compartido en la nube
 
 Proyecto final de *Paradigmas Emergentes en Computación en la Nube* (Maestría en Ingeniería de Sistemas, Escuela Colombiana de Ingeniería, PENU 2026-2).
 
@@ -42,8 +42,8 @@ Todas las rutas, salvo `health`, exigen sesión; la API revisa además que el us
 
 | Ruta | Parámetros | Respuesta |
 |---|---|---|
-| `GET /api/health` | — | Estado, conexión a la base y versión desplegada (pública, la usa la prueba de humo) |
-| `GET /api/inventario` | `sede` (1–3), `q`, `categoria`, `bajo` (1/0), `pagina`, `limite` (máx. 100) | `total` real, `pagina`, `umbralBajo` e `items` ordenados por nombre |
+| `GET /api/health` | Ninguno | Estado, conexión a la base y versión desplegada (pública, la usa la prueba de humo) |
+| `GET /api/inventario` | `sede` (1 a 3), `q`, `categoria`, `bajo` (1/0), `pagina`, `limite` (máx. 100) | `total` real, `pagina`, `umbralBajo` e `items` ordenados por nombre |
 | `GET /api/categorias` | `sede` | Categorías de la sede |
 | `GET /api/resumen` | `sede` | `productos`, `unidades`, `bajo`, `agotados` |
 
