@@ -287,7 +287,7 @@ function pintarSedes(sedes) {
 
 async function cambiarSede() {
   $('categoria').value = '';
-  $('subtitulo').textContent = `Existencias de la sede ${NOMBRES[sedeActual()]}`;
+  $('subtitulo').textContent = `Existencias actuales de la sede ${NOMBRES[sedeActual()]}`;
   cargarResumen();
   await cargarCategorias();
   consultar(1);
@@ -316,7 +316,7 @@ async function cambiarSede() {
   }
   pintarSedes(sedes);
   $('consulta').hidden = false;
-  $('subtitulo').textContent = `Existencias de la sede ${NOMBRES[sedeActual()]}`;
+  $('subtitulo').textContent = `Existencias actuales de la sede ${NOMBRES[sedeActual()]}`;
 
   $('formulario').addEventListener('submit', (e) => e.preventDefault());
   let espera;
