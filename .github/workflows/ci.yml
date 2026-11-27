@@ -17,41 +17,50 @@ jobs:
       run:
         working-directory: api
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - name: Descargar el código
+        uses: actions/checkout@v4
+      - name: Instalar Node.js
+        uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
           cache-dependency-path: api/package-lock.json
-      - run: npm ci
-      - run: npm run lint
+      - name: Instalar dependencias
+        run: npm ci
+      - name: Revisar el estilo del código (lint)
+        run: npm run lint
       # Bloqueante: si una prueba falla, el pipeline no continúa ni despliega.
-      - run: npm test
+      - name: Ejecutar las pruebas de la API
+        run: npm test
 
   cost-gate:
     name: Cost gate - unit tests
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - run: python3 -m unittest discover -s scripts/tests -v
+      - name: Descargar el código
+        uses: actions/checkout@v4
+      - name: Ejecutar las pruebas del control de costos
+        run: python3 -m unittest discover -s scripts/tests -v
 
   iac:
     name: IaC - fmt, validate and Checkov
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: hashicorp/setup-terraform@v3
+      - name: Descargar el código
+        uses: actions/checkout@v4
+      - name: Instalar Terraform
+        uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: 1.17.1
-      - name: Format
+      - name: Revisar el formato de Terraform
         run: terraform fmt -check -recursive infra
-      - name: Validate
+      - name: Validar la infraestructura
         run: |
           for dir in infra/bootstrap infra/environments/dev infra/environments/prod; do
             terraform -chdir="$dir" init -backend=false -input=false
             terraform -chdir="$dir" validate
           done
-      - name: Checkov (blocking)
+      - name: Checkov (bloqueante)
         uses: bridgecrewio/checkov-action@v12
         with:
           directory: infra
