@@ -36,32 +36,35 @@ jobs:
       TF_VAR_app_version: ${{ github.sha }}
       TF_DIR: infra/environments/${{ inputs.environment }}
     steps:
-      - uses: actions/checkout@v4
+      - name: Descargar el código
+        uses: actions/checkout@v4
 
-      - uses: azure/login@v2
+      - name: Iniciar sesión en Azure (OIDC)
+        uses: azure/login@v2
         with:
           client-id: ${{ vars.AZURE_CLIENT_ID }}
           tenant-id: ${{ vars.AZURE_TENANT_ID }}
           subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
 
-      - uses: hashicorp/setup-terraform@v3
+      - name: Instalar Terraform
+        uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: 1.17.1
           terraform_wrapper: false
 
-      - name: Terraform init
+      - name: Terraform, inicializar
         run: |
           terraform -chdir="$TF_DIR" init -input=false \
             -backend-config="resource_group_name=${{ vars.TFSTATE_RESOURCE_GROUP }}" \
             -backend-config="storage_account_name=${{ vars.TFSTATE_STORAGE_ACCOUNT }}" \
             -backend-config="container_name=${{ vars.TFSTATE_CONTAINER }}"
 
-      - name: Terraform plan
+      - name: Terraform, planificar
         run: terraform -chdir="$TF_DIR" plan -input=false -out=tfplan
 
       # Bloqueante: si el costo estimado del plan supera el presupuesto, no se aplica nada.
       # Presupuesto por defecto: dev 10 USD, prod 30 USD. Se cambia con la variable COST_BUDGET_USD.
-      - name: Cost gate
+      - name: Control de costos
         env:
           COST_BUDGET_USD: ${{ vars.COST_BUDGET_USD }}
           ENVIRONMENT: ${{ inputs.environment }}
@@ -69,10 +72,10 @@ jobs:
           terraform -chdir="$TF_DIR" show -json tfplan > plan.json
           python3 scripts/cost_gate.py plan.json --environment "$ENVIRONMENT"
 
-      - name: Terraform apply
+      - name: Terraform, aplicar
         run: terraform -chdir="$TF_DIR" apply -input=false tfplan
 
-      - name: Read outputs
+      - name: Leer las salidas de Terraform
         id: tf
         run: |
           terraform -chdir="$TF_DIR" output -json > outputs.json
@@ -80,17 +83,18 @@ jobs:
             echo "$k=$(jq -r ".$k.value" outputs.json)" >> "$GITHUB_OUTPUT"
           done
 
-      - uses: actions/setup-node@v4
+      - name: Instalar Node.js
+        uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
           cache-dependency-path: api/package-lock.json
 
-      - name: Install API dependencies (production only)
+      - name: Instalar dependencias de la API (solo producción)
         working-directory: api
         run: npm ci --omit=dev
 
-      - name: Deploy API (Azure Functions)
+      - name: Desplegar la API (Azure Functions)
         uses: Azure/functions-action@v1
         with:
           app-name: ${{ steps.tf.outputs.function_name }}
@@ -98,7 +102,7 @@ jobs:
 
       # La base se inicializa con el token Entra del pipeline (administrador de Azure SQL).
       # Se abre una regla de firewall temporal solo para la IP del runner.
-      - name: Initialize database
+      - name: Inicializar la base de datos
         env:
           SERVER_NAME: ${{ steps.tf.outputs.sql_server_name }}
           RG: ${{ steps.tf.outputs.resource_group }}
@@ -127,7 +131,7 @@ jobs:
           IDENTITY_CLIENT_ID="${{ steps.tf.outputs.identity_client_id }}" \
           node scripts/db-init.js
 
-      - name: Get Static Web Apps deployment token
+      - name: Obtener el token de despliegue de la web
         id: token
         run: |
           T=$(az staticwebapp secrets list --name "${{ steps.tf.outputs.swa_name }}" \
@@ -135,12 +139,12 @@ jobs:
           echo "::add-mask::$T"
           echo "value=$T" >> "$GITHUB_OUTPUT"
 
-      - name: Mark the environment in the web
+      - name: Marcar el entorno en la web
         env:
           ENVIRONMENT: ${{ inputs.environment }}
         run: printf '{"entorno":"%s"}\n' "$ENVIRONMENT" > web/entorno.json
 
-      - name: Deploy web (Static Web Apps)
+      - name: Desplegar la web (Static Web Apps)
         uses: Azure/static-web-apps-deploy@v1
         with:
           azure_static_web_apps_api_token: ${{ steps.token.outputs.value }}
@@ -149,7 +153,7 @@ jobs:
           skip_app_build: true
           skip_api_build: true
 
-      - name: Verify the SWA identity provider on the API
+      - name: Verificar el proveedor de identidad en la API
         env:
           SWA_NAME: ${{ steps.tf.outputs.swa_name }}
           RG: ${{ steps.tf.outputs.resource_group }}
@@ -174,14 +178,14 @@ jobs:
           fi
           echo "SWA identity provider enabled on ${FUNC_NAME}"
 
-      - name: Smoke test
+      - name: Prueba de humo
         env:
           SWA_URL: ${{ steps.tf.outputs.swa_url }}
           FUNC_NAME: ${{ steps.tf.outputs.function_name }}
           ENVIRONMENT: ${{ inputs.environment }}
         run: bash scripts/smoke-test.sh
 
-      - name: Deployment summary
+      - name: Resumen del despliegue
         env:
           SWA_URL: ${{ steps.tf.outputs.swa_url }}
           RG: ${{ steps.tf.outputs.resource_group }}
