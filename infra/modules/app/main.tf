@@ -275,3 +275,27 @@ resource "azurerm_monitor_metric_alert" "errores_5xx" {
     action_group_id = azurerm_monitor_action_group.equipo[0].id
   }
 }
+
+# ---------- Alerta de errores 4xx de la API (401 sin identidad, 403, solicitudes inválidas) ----------
+resource "azurerm_monitor_metric_alert" "errores_4xx" {
+  count               = var.budget_email == "" ? 0 : 1
+  name                = "alerta-4xx-${var.name}"
+  resource_group_name = azurerm_resource_group.main.name
+  scopes              = [azurerm_linux_function_app.api.id]
+  description         = "Más de 20 errores 4xx en 15 minutos: puede indicar que la identidad no llega a la API (401), un acceso indebido (403) o un cliente roto"
+  severity            = 3
+  frequency           = "PT5M"
+  window_size         = "PT15M"
+
+  criteria {
+    metric_namespace = "Microsoft.Web/sites"
+    metric_name      = "Http4xx"
+    aggregation      = "Total"
+    operator         = "GreaterThan"
+    threshold        = 20
+  }
+
+  action {
+    action_group_id = azurerm_monitor_action_group.equipo[0].id
+  }
+}
